@@ -1,0 +1,5 @@
+Can start up a local web server in python on port 5555
+
+$ python -m SimpleHTTPServer 5555
+
+TODO: Write a simple web server in go :-)
