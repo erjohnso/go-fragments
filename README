@@ -1,5 +1,4 @@
-Can start up a local web server in python on port 5555
+Can start up a local web server (hard-coded port 8080)
 
-$ python -m SimpleHTTPServer 5555
+$ go run http.go
 
-TODO: Write a simple web server in go :-)
