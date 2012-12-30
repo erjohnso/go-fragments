@@ -87,18 +87,120 @@ noted otherwise, all fragments can be run by cutting and pasting into the
 <a href="http://play.golang.org">playground</a>, or by saving the file locally
 (e.g. to a file named example.go) and executing the following command in your
 shell/terminal:
-<br /><br />
-<code>$ go run example.go</code>
-<br /><br />
+</p>
+
+<pre>
+$ go run example.go
+</pre>
+
+<p>
 Note: This assumes you have already installed Go.
 </p>
 
 
 <h2 id="strings">Strings</h2>
+<p>
+Runes, unicode, and strings
+</p>
+
 <h3 id="access_substrings">Accessing part of a string</h3>
-<h3 id="default_string_value">Setting a default value</h3>
+<p>
+You can use slices to access parts of a string by specifying a range with
+<i>start:end</i> positions.  The position values must be within array boundaries
+or the compiler will produce an error.
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+    s := "Hello World"
+
+    // range with start:end
+    fmt.Println(s[0:5])       // Hello
+
+    // empty start or end
+    fmt.Println(s[:5])        // Hello
+    fmt.Println(s[6:])        // World
+    fmt.Println(s[:])         // Hello World
+
+    // not allowed, compiler error
+    //fmt.Println(s[-1])      // overflow error
+    //fmt.Println(s[0:20])    // out of range error
+}
+---------------------------------------------------------------------------
+Hello
+Hello
+World
+Hello World
+</pre>
+
 <h3 id="one_char_at_a_time">Processing a string one character at a time</h3>
+<p>
+To iterate through a string, use a for-loop and position index.  The fragment below
+computes the decimal ASCII sum of a string.
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+    s := "Hello World"
+
+    var sum int16
+    sum = 0
+
+    for i := 0; i < len(s); i++ {
+        sum += int16(s[i])
+    }
+
+    fmt.Printf("Sum of characters in '%s' is %d\n", s, sum)
+}
+---------------------------------------------------------------------------
+Sum of characters in 'Hello World' is 1052
+</pre>
+
 <h3 id="align_strings">Aligning and formatting strings</h3>
+<p>
+Use the <code><a href="http://golang.org/pkg/fmt/">fmt</a></code> package to access
+formatted printing functions.  There are many formatting conversion 'verbs' to
+provide the best output representation in your programs.  The most generially useful
+is probably %v and uses the type's built-in <code>Stringer</code> interface.  The
+following fragment uses a <code>map</code> to represent a book's section and page
+number and prints a table-of-contents.
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+    // Common strings and integers
+    fmt.Printf("1. %s\n", "A string")
+    fmt.Printf("2. %30s %03d\n", "Align right and zero-padded", 5)
+    fmt.Printf("3. %-30s %d\n", "Align left, not padded", 5)
+
+    // Generic printing with %v
+    fmt.Printf("4. %v\n", map[string]float64{ "A Float": 6.626068e-34, "Another Float": 6.0221415e+23 })
+
+    // Handy conversions
+    fmt.Printf("5. %d base10 in base2 is: %b\n", 15, 15)
+    fmt.Printf("6. %d base10 in base16 is: %#x\n", 15, 15)
+}
+---------------------------------------------------------------------------
+1. A string
+2.    Align right and zero-padded 005
+3. Align left, not padded         5
+4. map[Another Float:6.0221415e+23 A Float:6.626068e-34]
+5. 15 base10 in base2 is: 1111
+6. 15 base10 in base16 is: 0xf
+</pre>
+
 <h3 id="combine_strings">Combining strings</h3>
 <h3 id="reverse_string">Reversing a string by words or characters</h3>
 <h3 id="contains_substring">Checking if a string contains a substring</h3>
