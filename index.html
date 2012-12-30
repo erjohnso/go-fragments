@@ -119,22 +119,22 @@ func main() {
     s := "Hello World"
 
     // range with start:end
-    fmt.Println(s[0:5])       // Hello
+    fmt.Println("1. " + s[0:5])       // Hello
 
     // empty start or end
-    fmt.Println(s[:5])        // Hello
-    fmt.Println(s[6:])        // World
-    fmt.Println(s[:])         // Hello World
+    fmt.Println("2. " + s[:5])        // Hello
+    fmt.Println("3. " + s[6:])        // World
+    fmt.Println("4. " + s[:])         // Hello World
 
     // not allowed, compiler error
     //fmt.Println(s[-1])      // overflow error
     //fmt.Println(s[0:20])    // out of range error
 }
 ---------------------------------------------------------------------------
-Hello
-Hello
-World
-Hello World
+1. Hello
+2. Hello
+3. World
+4. Hello World
 </pre>
 
 <h3 id="one_char_at_a_time">Processing a string one character at a time</h3>
@@ -158,10 +158,10 @@ func main() {
         sum += int16(s[i])
     }
 
-    fmt.Printf("Sum of characters in '%s' is %d\n", s, sum)
+    fmt.Printf("1. Sum of characters in '%s' is %d\n", s, sum)
 }
 ---------------------------------------------------------------------------
-Sum of characters in 'Hello World' is 1052
+1. Sum of characters in 'Hello World' is 1052
 </pre>
 
 <h3 id="align_strings">Aligning and formatting strings</h3>
@@ -202,15 +202,272 @@ func main() {
 </pre>
 
 <h3 id="combine_strings">Combining strings</h3>
+<p>
+Simple concatenation can be performed by "adding" strings together.  Building up
+large strings by this means is less efficient than using <code>strings.Join()</code>
+(see the <code><a href="http://golang.org/pkg/strings/">strings</a></code> package).
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+func main() {
+    s1 := "Hello"
+    s2 := "World"
+    greeting := "1. " + s1 + " " + s2
+    fmt.Println(greeting)
+
+    longString := "2. Long strings can be formed by adding individual parts " +
+        "together on separate lines."
+        // "Note that the addition/continuation " +
+        // "operator MUST be placed at the end of each line of code."
+        // + "Prefixing a line of code like this would be a compiler error."
+    fmt.Println(longString)
+
+
+    s := []string{"3. Use", "strings.Join()", "to", "concatenate", "efficiently."}
+    fmt.Println(strings.Join(s, " "))
+}
+---------------------------------------------------------------------------
+1. Hello World
+2. Long strings can be formed by adding individual parts together on separate lines.
+3. Use strings.Join() to concatenate efficiently.
+</pre>
+
+<h3 id="t2csv_strings">Convert a tab-delimited string to comma-delimitted (sans regex)</h3>
+<p>
+Use the <code><a href="http://golang.org/pkg/strings/">strings</a></code> package
+to split a string on a character (rune) and join it again with a new character.  This
+fragment shows two separate approaches neither of them using the <code>regex</code>
+package.
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+func tabSplitFunc(r rune) bool {
+    return r == '\u0009'
+}
+
+func main() {
+    // Method 1
+    tsv := "The\twords\tof\tthis\tstring\tare\tdelimited\tby\ta\tcharacter."
+    parts := strings.FieldsFunc(tsv, tabSplitFunc)
+    csv := strings.Join(parts, ",")
+    fmt.Println("1. " + tsv)
+    fmt.Println("2. " + csv)
+
+    // Method 2: Just use Replace(), it's cleaner
+    csv2 := strings.Replace(tsv, "\t", ",", -1)
+    fmt.Println("3. " + csv2)
+
+    if csv == csv2 {
+        fmt.Println("4. Both methods produce the same result.")
+    }
+}
+---------------------------------------------------------------------------
+1. The  words   of  this    string  are delimited   by  a   character.
+2. The,words,of,this,string,are,delimited,by,a,character.
+3. The,words,of,this,string,are,delimited,by,a,character.
+4. Both methods produce the same result.
+</pre>
+
 <h3 id="reverse_string">Reversing a string by words or characters</h3>
+<p>
+Since strings are immutable, reversing a string will require building up a new
+string to store the result.  Arrays can be modified in-line and the fragment below
+shows both an in-line method and another method to write the reversed order to a
+new array.
+</p>
+<p>
+Note that the for-loop's parallel processing cannot make use of the <code>i--</code>
+or <code>i++</code> syntax since they are statements and not general expressions.
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+func main() {
+    // Reverse a string one character at a time.  Strings are immutable
+    // so use a new string for the result
+    rw := "sdrawkcab drow"
+    fw := ""
+    for i := len(rw); i > 0; i-- {
+       fw += string(rw[i - 1])
+    }
+    fmt.Println("1. " + rw)
+    fmt.Println("2. " + fw)
+
+
+    // Reverse a string one word at a time into a new array
+    rs := "reversed. been has it once sense more make will This"
+    parts := strings.Fields(rs)
+    reverseParts := make([]string, len(parts))
+    for i, j := len(parts) - 1, 0; i != -1; i, j = i-1, j+1 {
+       reverseParts[j] = parts[i]
+    }
+    fs := strings.Join(reverseParts, " ")
+    fmt.Println("3. " + rs)
+    fmt.Println("4. " + fs)
+
+
+    // Reverse the 'parts' array in-line
+    for i, j := 0, len(parts) - 1; i < j; i, j = i+1, j-1 {
+        parts[i], parts[j] = parts[j], parts[i]
+    }
+    fmt.Println("5. " + strings.Join(parts, " "))
+}
+---------------------------------------------------------------------------
+1. sdrawkcab drow
+2. word backwards
+3. reversed. been has it once sense more make will This
+4. This will make more sense once it has been reversed.
+5. This will make more sense once it has been reversed.
+</pre>
+
 <h3 id="contains_substring">Checking if a string contains a substring</h3>
+<p>
+There are many useful functions for examining the contents of a string in the
+<code><a href="http://golang.org/pkg/strings/">strings</a></code> package.
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    s "strings"
+)
+
+var fp = fmt.Println
+
+func main() {
+    fp("1. Does 'banana' contain 'ana'?    ",  s.Contains("banana", "ana"))
+    fp("2. Does 'banana' start with 'ba'?  ",  s.HasPrefix("banana", "ba"))
+    fp("3. Does 'banana' end with 'nana'?  ",  s.HasSuffix("banana", "nana"))
+    fp("4. How many 'na' terms in 'banana'?",  s.Count("banana", "na"))
+    fp("5. What is the position of 1st 'n'?",  s.Index("banana", "n"))
+}
+---------------------------------------------------------------------------
+1. Does 'banana' contain 'ana'?     true
+2. Does 'banana' start with 'ba'?   true
+3. Does 'banana' end with 'nana'?   true
+4. How many 'na' terms in 'banana'? 2
+5. What is the position of 1st 'n'? 2
+</pre>
+
 <h3 id="control_case">Controlling case</h3>
+<p>
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
 <h3 id="capitalize_title">Capitalzing a title or heading</h3>
+<p>
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
 <h3 id="unicode_strings">Unicode strings</h3>
+<p>
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
 <h3 id="reformatting_strings">Reformatting paragraphs</h3>
+<p>
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
 <h3 id="escaping_strings">Escapting characters</h3>
+<p>
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
 <h3 id="trimming_strings">Trimming unwanted characters such as blanks</h3>
+<p>
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
 <h3 id="csv_strings">Parsing and creating CSV data</h3>
+<p>
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
 
 <h2 id="numbers">Numbers</h2>
 <h2 id="datetime">Dates and Times</h2>
