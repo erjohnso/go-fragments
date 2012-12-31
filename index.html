@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Go Fragments: Go Programming Language Code Fragments</title>
+  <title>Go Fragments: Go Programming Language Examples</title>
   <link type="text/css" rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="favicon.ico" />
   <script type="text/javascript"
@@ -17,15 +17,11 @@
 <div id="page" class="wide">
 <div class="container">
 <h1>
-Go Fragments:  Go Programming Language Code Fragments
+Go Fragments:  Go Programming Language Examples
 <!-- Place this tag where you want the +1 button to render. -->
+<br /><br />
 <div class="g-plusone" data-annotation="inline" data-width="300"></div>
 </h1>
-
-<h4>Copyright &copy; 2012
-<a href="https://plus.google.com/113761475390420605778">Eric Johnson</a>,
-&lt;eric AT coding-zone DOT com&gt;
-</h4>
 
 <div id="nav"></div>
 
@@ -373,62 +369,122 @@ func main() {
 
 <h3 id="control_case">Controlling case</h3>
 <p>
+Once again, the <code><a href="http://golang.org/pkg/strings/">strings</a></code>
+package contains useful functions.  The fragment below highlights several examples
+for adjusting the case of a string.
 </p>
 
 <pre>
 package main
 
-import "fmt"
+import (
+    "fmt"
+    s "strings"
+)
+
+var fp = fmt.Println
 
 func main() {
+    fp(s.ToUpper("1. uppercase all letters"))
+    fp(s.ToLower("2. LOWERCASE ALL LETTERS"))
+    fp(s.Title("3. uppercase first letter of each word"))
 }
 ---------------------------------------------------------------------------
+1. UPPERCASE ALL LETTERS
+2. lowercase all letters
+3. Uppercase First Letter Of Each Word
 </pre>
 
-<h3 id="capitalize_title">Capitalzing a title or heading</h3>
-<p>
-</p>
-
-<pre>
-package main
-
-import "fmt"
-
-func main() {
-}
----------------------------------------------------------------------------
-</pre>
-
-<h3 id="unicode_strings">Unicode strings</h3>
-<p>
-</p>
-
-<pre>
-package main
-
-import "fmt"
-
-func main() {
-}
----------------------------------------------------------------------------
-</pre>
 
 <h3 id="reformatting_strings">Reformatting paragraphs</h3>
 <p>
+There is no built-in paragraph formatting function.  The below fragment can be used
+to re-format a set of text to a given width respecting word boundaries.  The
+<code>textWrap()</code> function makes use of the <code>strings.Fields()</code> to
+split the input string by any/all whitespace trimming all newlines.
 </p>
 
 <pre>
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "strings"
+)
+
+var fp = fmt.Println
+
+func textWrap(input string, width int) string {
+    // Split on any/all whitespace including newlines
+    parts := strings.Fields(input)
+
+    lineLength := 0
+    for i, w := range parts {
+        if lineLength + len(w) > width {
+            parts[i] = fmt.Sprintf("\n%s", w) // line too long, prepend a newline
+            lineLength = len(w) + 1 // add one for word spacing via strings.Join()
+        } else {
+            lineLength = lineLength + len(w) + 1 // add one for word spacing
+        }
+    }
+    return strings.Join(parts, " ")
+}
 
 func main() {
+    fp(strings.Repeat("1234567890", 6))
+    fp("This line should be\nwrapped at XX characters and continue")
+    fp("")
+
+    fp(strings.Repeat("1234567890", 5))
+    fp(textWrap("This line should be\nwrapped at 50 characters and continue", 50))
+    fp("")
+
+    fp(strings.Repeat("1234567890", 3))
+    fp(textWrap("This line should be\nwrapped at 30 characters and continue", 30))
+    fp("")
+
+    fp(strings.Repeat("1234567890", 2))
+    fp(textWrap("This line should be\nwrapped at 20 characters and continue", 20))
+    fp("")
+
+    fp("123456789")
+    fp(textWrap("This line should be\nwrapped at 09 characters and continue", 9))
+    fp("")
 }
 ---------------------------------------------------------------------------
+123456789012345678901234567890123456789012345678901234567890
+This line should be
+wrapped at XX characters and continue
+
+12345678901234567890123456789012345678901234567890
+This line should be wrapped at 50 characters and 
+continue
+
+123456789012345678901234567890
+This line should be wrapped at 
+30 characters and continue
+
+12345678901234567890
+This line should be 
+wrapped at 20 
+characters and 
+continue
+
+123456789
+This line 
+should be 
+wrapped 
+at 09 
+characters 
+and 
+continue
 </pre>
 
-<h3 id="escaping_strings">Escapting characters</h3>
+<h3 id="escaping_strings">Escaping characters</h3>
 <p>
+Use the backslash character '\' for escaping characters and embedding unicode or UTF-8.
+The <a href="http://golang.org/ref/spec#Rune_literals">Rune literals</a> section of the
+Go language specification provides more detail.
 </p>
 
 <pre>
@@ -436,27 +492,61 @@ package main
 
 import "fmt"
 
+var fp = fmt.Println
+
 func main() {
+    fp("1. Embed tabs with '\\t': These\twords\tare\tseparated\tby\ttabs.")
+    fp("2. Embed newlines with '\\n': These\nwords\nare\nseparated by newlines.\n")
+    fp("3. Use two backslash characters to print a single slash '\\\\': '\\'")
+    fp("4. Embed unicode with '\\u': \u2673 \u267b \u261e")
 }
 ---------------------------------------------------------------------------
+1. Embed tabs with '\t': These  words   are separated   by  tabs.
+2. Embed newlines with '\n': These
+words
+are
+separated by newlines.
+
+3. Use two backslash characters to print a single slash '\\': '\'
+4. Embed unicode with '\u': ♳ ♻ ☞
 </pre>
 
 <h3 id="trimming_strings">Trimming unwanted characters such as blanks</h3>
 <p>
+The <code><a href="http://golang.org/pkg/strings/">strings</a></code> package contains
+useful functions for stripping whitespace from strings.  The fragment below demonstrates
+a few examples.
 </p>
 
 <pre>
 package main
 
-import "fmt"
+import (
+    "fmt"
+    s "strings"
+)
+
+var fp = fmt.Println
 
 func main() {
+    fp("1. " + s.Trim("  abccba  ", "ba "))  // cuts specified leading/trailing characters
+    fp("2. " + s.TrimLeft("  abccba  ", " ba"))
+    fp("3. " + s.TrimSpace("\t\n foo \n\t"))
 }
 ---------------------------------------------------------------------------
+1. cc
+2. ccba  
+3. foo
 </pre>
 
 <h3 id="csv_strings">Parsing and creating CSV data</h3>
 <p>
+The <code><a href="http://golang.org/pkg/encoding/csv/">encoding/csv</a></code> package
+contains functions for reading and writing CSV data.
+</p>
+<p>
+<b>TODO(erjohnso)</b>: Create fragment using an string as io.Reader/Writer since file
+access won't work in the playground.
 </p>
 
 <pre>
@@ -470,6 +560,26 @@ func main() {
 </pre>
 
 <h2 id="numbers">Numbers</h2>
+<p>
+All about numbers...
+</p>
+
+<h3 id="_num">Placeholder</h3>
+<p>
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+
+
 <h2 id="datetime">Dates and Times</h2>
 <h2 id="arrays">Arrays</h2>
 <h2 id="structs">Structs</h2>
