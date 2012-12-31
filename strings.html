@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Go Fragments: Strings</title>
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="favicon.ico" />
+  <script type="text/javascript"
+  src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+  </script>
+  <script type="text/javascript">window.jQuery || document.write(unescape("%3Cscript src='jquery.js' type='text/javascript'%3E%3C/script%3E"));</script>
+  <script type="text/javascript" src="godocs.js"></script>
+</head>
+
+<body>
+
+<div id="page" class="wide">
+<div class="container">
+<h1>
+Go Fragments: Strings
+<!-- Place this tag where you want the +1 button to render. -->
+<br /><br />
+<div class="g-plusone" data-annotation="inline" data-width="300"></div>
+</h1>
+
+<a href="/">Main ToC</a> - Main table of contents
+<div id="nav"></div>
+
+
+<h2 id="strings">Strings</h2>
+<p>
+Runes, unicode, and strings
+</p>
+
+<h3 id="access_substrings">Accessing part of a string</h3>
+<p>
+You can use slices to access parts of a string by specifying a range with
+<i>start:end</i> positions.  The position values must be within array boundaries
+or the compiler will produce an error.
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+    s := "Hello World"
+
+    // range with start:end
+    fmt.Println("1. " + s[0:5])       // Hello
+
+    // empty start or end
+    fmt.Println("2. " + s[:5])        // Hello
+    fmt.Println("3. " + s[6:])        // World
+    fmt.Println("4. " + s[:])         // Hello World
+
+    // not allowed, compiler error
+    //fmt.Println(s[-1])      // overflow error
+    //fmt.Println(s[0:20])    // out of range error
+}
+---------------------------------------------------------------------------
+1. Hello
+2. Hello
+3. World
+4. Hello World
+</pre>
+
+<h3 id="one_char_at_a_time">Processing a string one character at a time</h3>
+<p>
+To iterate through a string, use a for-loop and position index.  The fragment below
+computes the decimal ASCII sum of a string.
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+    s := "Hello World"
+
+    var sum int16
+    sum = 0
+
+    for i := 0; i < len(s); i++ {
+        sum += int16(s[i])
+    }
+
+    fmt.Printf("1. Sum of characters in '%s' is %d\n", s, sum)
+}
+---------------------------------------------------------------------------
+1. Sum of characters in 'Hello World' is 1052
+</pre>
+
+<h3 id="align_strings">Aligning and formatting strings</h3>
+<p>
+Use the <code><a href="http://golang.org/pkg/fmt/">fmt</a></code> package to access
+formatted printing functions.  There are many formatting conversion 'verbs' to
+provide the best output representation in your programs.  The most generially useful
+is probably %v and uses the type's built-in <code>Stringer</code> interface.  The
+following fragment uses a <code>map</code> to represent a book's section and page
+number and prints a table-of-contents.
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+    // Common strings and integers
+    fmt.Printf("1. %s\n", "A string")
+    fmt.Printf("2. %30s %03d\n", "Align right and zero-padded", 5)
+    fmt.Printf("3. %-30s %d\n", "Align left, not padded", 5)
+
+    // Generic printing with %v
+    fmt.Printf("4. %v\n", map[string]float64{ "A Float": 6.626068e-34, "Another Float": 6.0221415e+23 })
+
+    // Handy conversions
+    fmt.Printf("5. %d base10 in base2 is: %b\n", 15, 15)
+    fmt.Printf("6. %d base10 in base16 is: %#x\n", 15, 15)
+}
+---------------------------------------------------------------------------
+1. A string
+2.    Align right and zero-padded 005
+3. Align left, not padded         5
+4. map[Another Float:6.0221415e+23 A Float:6.626068e-34]
+5. 15 base10 in base2 is: 1111
+6. 15 base10 in base16 is: 0xf
+</pre>
+
+<h3 id="combine_strings">Combining strings</h3>
+<p>
+Simple concatenation can be performed by "adding" strings together.  Building up
+large strings by this means is less efficient than using <code>strings.Join()</code>
+(see the <code><a href="http://golang.org/pkg/strings/">strings</a></code> package).
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+func main() {
+    s1 := "Hello"
+    s2 := "World"
+    greeting := "1. " + s1 + " " + s2
+    fmt.Println(greeting)
+
+    longString := "2. Long strings can be formed by adding individual parts " +
+        "together on separate lines."
+        // "Note that the addition/continuation " +
+        // "operator MUST be placed at the end of each line of code."
+        // + "Prefixing a line of code like this would be a compiler error."
+    fmt.Println(longString)
+
+
+    s := []string{"3. Use", "strings.Join()", "to", "concatenate", "efficiently."}
+    fmt.Println(strings.Join(s, " "))
+}
+---------------------------------------------------------------------------
+1. Hello World
+2. Long strings can be formed by adding individual parts together on separate lines.
+3. Use strings.Join() to concatenate efficiently.
+</pre>
+
+<h3 id="t2csv_strings">Convert a tab-delimited string to comma-delimitted (sans regex)</h3>
+<p>
+Use the <code><a href="http://golang.org/pkg/strings/">strings</a></code> package
+to split a string on a character (rune) and join it again with a new character.  This
+fragment shows two separate approaches neither of them using the <code>regex</code>
+package.
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+func tabSplitFunc(r rune) bool {
+    return r == '\u0009'
+}
+
+func main() {
+    // Method 1
+    tsv := "The\twords\tof\tthis\tstring\tare\tdelimited\tby\ta\tcharacter."
+    parts := strings.FieldsFunc(tsv, tabSplitFunc)
+    csv := strings.Join(parts, ",")
+    fmt.Println("1. " + tsv)
+    fmt.Println("2. " + csv)
+
+    // Method 2: Just use Replace(), it's cleaner
+    csv2 := strings.Replace(tsv, "\t", ",", -1)
+    fmt.Println("3. " + csv2)
+
+    if csv == csv2 {
+        fmt.Println("4. Both methods produce the same result.")
+    }
+}
+---------------------------------------------------------------------------
+1. The  words   of  this    string  are delimited   by  a   character.
+2. The,words,of,this,string,are,delimited,by,a,character.
+3. The,words,of,this,string,are,delimited,by,a,character.
+4. Both methods produce the same result.
+</pre>
+
+<h3 id="reverse_string">Reversing a string by words or characters</h3>
+<p>
+Since strings are immutable, reversing a string will require building up a new
+string to store the result.  Arrays can be modified in-line and the fragment below
+shows both an in-line method and another method to write the reversed order to a
+new array.
+</p>
+<p>
+Note that the for-loop's parallel processing cannot make use of the <code>i--</code>
+or <code>i++</code> syntax since they are statements and not general expressions.
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+func main() {
+    // Reverse a string one character at a time.  Strings are immutable
+    // so use a new string for the result
+    rw := "sdrawkcab drow"
+    fw := ""
+    for i := len(rw); i > 0; i-- {
+       fw += string(rw[i - 1])
+    }
+    fmt.Println("1. " + rw)
+    fmt.Println("2. " + fw)
+
+
+    // Reverse a string one word at a time into a new array
+    rs := "reversed. been has it once sense more make will This"
+    parts := strings.Fields(rs)
+    reverseParts := make([]string, len(parts))
+    for i, j := len(parts) - 1, 0; i != -1; i, j = i-1, j+1 {
+       reverseParts[j] = parts[i]
+    }
+    fs := strings.Join(reverseParts, " ")
+    fmt.Println("3. " + rs)
+    fmt.Println("4. " + fs)
+
+
+    // Reverse the 'parts' array in-line
+    for i, j := 0, len(parts) - 1; i < j; i, j = i+1, j-1 {
+        parts[i], parts[j] = parts[j], parts[i]
+    }
+    fmt.Println("5. " + strings.Join(parts, " "))
+}
+---------------------------------------------------------------------------
+1. sdrawkcab drow
+2. word backwards
+3. reversed. been has it once sense more make will This
+4. This will make more sense once it has been reversed.
+5. This will make more sense once it has been reversed.
+</pre>
+
+<h3 id="contains_substring">Checking if a string contains a substring</h3>
+<p>
+There are many useful functions for examining the contents of a string in the
+<code><a href="http://golang.org/pkg/strings/">strings</a></code> package.
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    s "strings"
+)
+
+var fp = fmt.Println
+
+func main() {
+    fp("1. Does 'banana' contain 'ana'?    ",  s.Contains("banana", "ana"))
+    fp("2. Does 'banana' start with 'ba'?  ",  s.HasPrefix("banana", "ba"))
+    fp("3. Does 'banana' end with 'nana'?  ",  s.HasSuffix("banana", "nana"))
+    fp("4. How many 'na' terms in 'banana'?",  s.Count("banana", "na"))
+    fp("5. What is the position of 1st 'n'?",  s.Index("banana", "n"))
+}
+---------------------------------------------------------------------------
+1. Does 'banana' contain 'ana'?     true
+2. Does 'banana' start with 'ba'?   true
+3. Does 'banana' end with 'nana'?   true
+4. How many 'na' terms in 'banana'? 2
+5. What is the position of 1st 'n'? 2
+</pre>
+
+<h3 id="control_case">Controlling case</h3>
+<p>
+Once again, the <code><a href="http://golang.org/pkg/strings/">strings</a></code>
+package contains useful functions.  The fragment below highlights several examples
+for adjusting the case of a string.
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    s "strings"
+)
+
+var fp = fmt.Println
+
+func main() {
+    fp(s.ToUpper("1. uppercase all letters"))
+    fp(s.ToLower("2. LOWERCASE ALL LETTERS"))
+    fp(s.Title("3. uppercase first letter of each word"))
+}
+---------------------------------------------------------------------------
+1. UPPERCASE ALL LETTERS
+2. lowercase all letters
+3. Uppercase First Letter Of Each Word
+</pre>
+
+
+<h3 id="reformatting_strings">Reformatting paragraphs</h3>
+<p>
+There is no built-in paragraph formatting function.  The below fragment can be used
+to re-format a set of text to a given width respecting word boundaries.  The
+<code>textWrap()</code> function makes use of the <code>strings.Fields()</code> to
+split the input string by any/all whitespace trimming all newlines.
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+var fp = fmt.Println
+
+func textWrap(input string, width int) string {
+    // Split on any/all whitespace including newlines
+    parts := strings.Fields(input)
+
+    lineLength := 0
+    for i, w := range parts {
+        if lineLength + len(w) > width {
+            parts[i] = fmt.Sprintf("\n%s", w) // line too long, prepend a newline
+            lineLength = len(w) + 1 // add one for word spacing via strings.Join()
+        } else {
+            lineLength = lineLength + len(w) + 1 // add one for word spacing
+        }
+    }
+    return strings.Join(parts, " ")
+}
+
+func main() {
+    fp(strings.Repeat("1234567890", 6))
+    fp("This line should be\nwrapped at XX characters and continue")
+    fp("")
+
+    fp(strings.Repeat("1234567890", 5))
+    fp(textWrap("This line should be\nwrapped at 50 characters and continue", 50))
+    fp("")
+
+    fp(strings.Repeat("1234567890", 3))
+    fp(textWrap("This line should be\nwrapped at 30 characters and continue", 30))
+    fp("")
+
+    fp(strings.Repeat("1234567890", 2))
+    fp(textWrap("This line should be\nwrapped at 20 characters and continue", 20))
+    fp("")
+
+    fp("123456789")
+    fp(textWrap("This line should be\nwrapped at 09 characters and continue", 9))
+    fp("")
+}
+---------------------------------------------------------------------------
+123456789012345678901234567890123456789012345678901234567890
+This line should be
+wrapped at XX characters and continue
+
+12345678901234567890123456789012345678901234567890
+This line should be wrapped at 50 characters and 
+continue
+
+123456789012345678901234567890
+This line should be wrapped at 
+30 characters and continue
+
+12345678901234567890
+This line should be 
+wrapped at 20 
+characters and 
+continue
+
+123456789
+This line 
+should be 
+wrapped 
+at 09 
+characters 
+and 
+continue
+</pre>
+
+<h3 id="escaping_strings">Escaping characters</h3>
+<p>
+Use the backslash character '\' for escaping characters and embedding unicode or UTF-8.
+The <a href="http://golang.org/ref/spec#Rune_literals">Rune literals</a> section of the
+Go language specification provides more detail.
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+var fp = fmt.Println
+
+func main() {
+    fp("1. Embed tabs with '\\t': These\twords\tare\tseparated\tby\ttabs.")
+    fp("2. Embed newlines with '\\n': These\nwords\nare\nseparated by newlines.\n")
+    fp("3. Use two backslash characters to print a single slash '\\\\': '\\'")
+    fp("4. Embed unicode with '\\u': \u2673 \u267b \u261e")
+}
+---------------------------------------------------------------------------
+1. Embed tabs with '\t': These  words   are separated   by  tabs.
+2. Embed newlines with '\n': These
+words
+are
+separated by newlines.
+
+3. Use two backslash characters to print a single slash '\\': '\'
+4. Embed unicode with '\u': ♳ ♻ ☞
+</pre>
+
+<h3 id="trimming_strings">Trimming unwanted characters such as blanks</h3>
+<p>
+The <code><a href="http://golang.org/pkg/strings/">strings</a></code> package contains
+useful functions for stripping whitespace from strings.  The fragment below demonstrates
+a few examples.
+</p>
+
+<pre>
+package main
+
+import (
+    "fmt"
+    s "strings"
+)
+
+var fp = fmt.Println
+
+func main() {
+    fp("1. " + s.Trim("  abccba  ", "ba "))  // cuts specified leading/trailing characters
+    fp("2. " + s.TrimLeft("  abccba  ", " ba"))
+    fp("3. " + s.TrimSpace("\t\n foo \n\t"))
+}
+---------------------------------------------------------------------------
+1. cc
+2. ccba  
+3. foo
+</pre>
+
+<h3 id="csv_strings">Parsing and creating CSV data</h3>
+<p>
+The <code><a href="http://golang.org/pkg/encoding/csv/">encoding/csv</a></code> package
+contains functions for reading and writing CSV data.
+</p>
+<p>
+<b>TODO(erjohnso)</b>: Create fragment using an string as io.Reader/Writer since file
+access won't work in the playground.
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+
+<div id="footer">
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Go Fragments</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://plus.google.com/113761475390420605778" property="cc:attributionName" rel="cc:attributionURL">Eric Johnson</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+<br />
+Copyright &copy; 2012
+<a href="https://plus.google.com/113761475390420605778">Eric Johnson</a>,
+&lt;eric AT coding-zone DOT com&gt;
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+
+</body>
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+  (function() {
+      var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+          po.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+</html>
