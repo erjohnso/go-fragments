@@ -28,7 +28,7 @@ function generateTOC() {
   }
 
   var toc_items = [];
-  $(nav).nextAll('h2, h3, h4').each(function() {
+  $(nav).nextAll('h2, h3, span').each(function() {
     var node = this;
     if (node.id == '')
       node.id = 'tmp_' + toc_items.length;
@@ -40,7 +40,7 @@ function generateTOC() {
     var item;
     if ($(node).is('h3')) {
       item = $('<dd/>');
-    } else { // h2,h4
+    } else { // h2,span
       item = $('<dt/>');
     }
     item.append(link);

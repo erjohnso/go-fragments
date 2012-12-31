@@ -81,15 +81,17 @@ h4 {
 	margin: 20px 5px;
 }
 h4 {
-	font-size: 1px;
-    color: #FFFFFF;
-    background: #FFFFFF;
+	font-size: 20px;
 }
 .rootHeading {
 	font-size: 20px;
 	margin: 0;
 }
-
+span {
+    font-size: 1px;
+    color: #FFFFFF;
+    background: #FFFFFF;
+}
 dl {
 	margin: 20px;
 }
