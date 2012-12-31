@@ -28,16 +28,20 @@ function generateTOC() {
   }
 
   var toc_items = [];
-  $(nav).nextAll('h2, h3').each(function() {
+  $(nav).nextAll('h2, h3, h4').each(function() {
     var node = this;
     if (node.id == '')
       node.id = 'tmp_' + toc_items.length;
-    var link = $('<a/>').attr('href', '#' + node.id).text($(node).text());
+    if (/_html$/.test(node.id)) {
+        var link = $('<a/>').attr('href', '/' + node.id.replace("_",".")).text($(node).text());
+    } else {
+        var link = $('<a/>').attr('href', '#' + node.id).text($(node).text());
+    }
     var item;
-    if ($(node).is('h2')) {
-      item = $('<dt/>');
-    } else { // h3
+    if ($(node).is('h3')) {
       item = $('<dd/>');
+    } else { // h2,h4
+      item = $('<dt/>');
     }
     item.append(link);
     toc_items.push(item);

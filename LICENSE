@@ -1,134 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+Copyright (c) 2012 Eric Johnson. All rights reserved.
 
-  <title>LICENSE - The Go Programming Language</title>
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
 
-<link type="text/css" rel="stylesheet" href="/doc/style.css">
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-<script type="text/javascript">window.jQuery || document.write(unescape("%3Cscript src='/doc/jquery.js' type='text/javascript'%3E%3C/script%3E"));</script>
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * The authors and contributors of this material may not be used
+to endorse or promote products derived from this software without
+specific prior written permission.
 
-<script type="text/javascript" src="/doc/play/playground.js"></script>
-
-<script type="text/javascript" src="/doc/godocs.js"></script>
-
-<link rel="search" type="application/opensearchdescription+xml" title="godoc" href="/opensearch.xml" />
-
-<script type="text/javascript">
-var _gaq = _gaq || [];
-_gaq.push(["_setAccount", "UA-11222381-2"]);
-_gaq.push(["_trackPageview"]);
-</script>
-</head>
-<body>
-
-<div id="topbar" class="wide"><div class="container">
-
-<form method="GET" action="/search">
-<div id="menu">
-<a href="/doc/">Documents</a>
-<a href="/ref/">References</a>
-<a href="/pkg/">Packages</a>
-<a href="/project/">The Project</a>
-<a href="/help/">Help</a>
-
-<a id="playgroundButton" href="http://play.golang.org/" title="Show Go Playground">Play</a>
-
-<input type="text" id="search" name="q" class="inactive" value="Search" placeholder="Search">
-</div>
-<div id="heading"><a href="/">The Go Programming Language</a></div>
-</form>
-
-</div></div>
-
-
-<div id="playground" class="play">
-	<div class="input"><textarea class="code">package main
-
-import "fmt"
-
-func main() {
-	fmt.Println("Hello, 世界")
-}</textarea></div>
-	<div class="output"></div>
-	<div class="buttons">
-		<a class="run" title="Run this code [shift-enter]">Run</a>
-		<a class="fmt" title="Format this code">Format</a>
-		<a class="share" title="Share this code">Share</a>
-	</div>
-</div>
-
-
-<div id="page" class="wide">
-<div class="container">
-
-
-  <div id="plusone"><g:plusone size="small" annotation="none"></g:plusone></div>
-  <h1>Text file LICENSE</h1>
-
-
-
-
-<div id="nav"></div>
-
-
-<pre><a id="L1"></a><span class="ln">     1</span>	Copyright (c) 2012 The Go Authors. All rights reserved.
-<a id="L2"></a><span class="ln">     2</span>	
-<a id="L3"></a><span class="ln">     3</span>	Redistribution and use in source and binary forms, with or without
-<a id="L4"></a><span class="ln">     4</span>	modification, are permitted provided that the following conditions are
-<a id="L5"></a><span class="ln">     5</span>	met:
-<a id="L6"></a><span class="ln">     6</span>	
-<a id="L7"></a><span class="ln">     7</span>	   * Redistributions of source code must retain the above copyright
-<a id="L8"></a><span class="ln">     8</span>	notice, this list of conditions and the following disclaimer.
-<a id="L9"></a><span class="ln">     9</span>	   * Redistributions in binary form must reproduce the above
-<a id="L10"></a><span class="ln">    10</span>	copyright notice, this list of conditions and the following disclaimer
-<a id="L11"></a><span class="ln">    11</span>	in the documentation and/or other materials provided with the
-<a id="L12"></a><span class="ln">    12</span>	distribution.
-<a id="L13"></a><span class="ln">    13</span>	   * Neither the name of Google Inc. nor the names of its
-<a id="L14"></a><span class="ln">    14</span>	contributors may be used to endorse or promote products derived from
-<a id="L15"></a><span class="ln">    15</span>	this software without specific prior written permission.
-<a id="L16"></a><span class="ln">    16</span>	
-<a id="L17"></a><span class="ln">    17</span>	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-<a id="L18"></a><span class="ln">    18</span>	&#34;AS IS&#34; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-<a id="L19"></a><span class="ln">    19</span>	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-<a id="L20"></a><span class="ln">    20</span>	A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-<a id="L21"></a><span class="ln">    21</span>	OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-<a id="L22"></a><span class="ln">    22</span>	SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-<a id="L23"></a><span class="ln">    23</span>	LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-<a id="L24"></a><span class="ln">    24</span>	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-<a id="L25"></a><span class="ln">    25</span>	THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-<a id="L26"></a><span class="ln">    26</span>	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-<a id="L27"></a><span class="ln">    27</span>	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-</pre>
-
-<div id="footer">
-Build version go1.0.3.<br>
-Except as <a href="http://code.google.com/policies.html#restrictions">noted</a>,
-the content of this page is licensed under the
-Creative Commons Attribution 3.0 License,
-and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
-<a href="/doc/tos.html">Terms of Service</a> | 
-<a href="http://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
-</div>
-
-</div><!-- .container -->
-</div><!-- #page -->
-
-<script type="text/javascript">
-(function() {
-  var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true;
-  ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";
-  var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);
-})();
-</script>
-</body>
-<script type="text/javascript">
-  (function() {
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-    po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-  })();
-</script>
-</html>
-
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
