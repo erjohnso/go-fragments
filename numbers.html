@@ -27,10 +27,198 @@ Go Fragments: Numbers
 
 <h2 id="numbers">Numbers</h2>
 <p>
-All about numbers...
+Go's numeric types are:
 </p>
 
-<h3 id="_num">Placeholder</h3>
+<pre>
+Signed Integers         Unsigned Integers
+===============         =================
+int8                    uint8
+int16                   uint16
+int32 or int            uint32 or uint
+int64                   uint64
+
+Floating-point
+==============
+float32
+float64
+
+Complex Numbers
+===============
+complex64
+complex128
+</pre>
+
+<h3 id="str_num">Parsing a Number from a String</h3>
+<p>
+The <code><a href="http://golang.org/pkg/fmt/">fmt</a></code> package contains scanning
+functions for parsing formatted text and capturing numerical values.  The Scan, Scanf,
+and Scanln functions read from os.Stdin while the Fscan, Fscanf, and Fscanln functions
+read from an io.Reader.  The Sscan, Sscanf, and Sscanln functions read from a string
+as demonstrated in the below fragment.
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+    var (
+        i int
+        f float32
+        c complex64
+    )
+    n, err := fmt.Sscanf("5 is an int, 3.209 is a float32, 4-3i is a complex number",
+        "%d is an int, %f is a float32, %f is a complex number", &i, &f, &c)
+
+    if err != nil {
+        fmt.Println("Conversion error:", err)
+    }
+    fmt.Printf("Converted %d items: %d, %f, %f\n", n, i, f, c)
+}
+---------------------------------------------------------------------------
+Converted 3 items: 5, 3.209000, (4.000000-3.000000i)
+</pre>
+
+
+<h3 id="round_num">Rounding Floating-Point Numbers</h3>
+<p>
+First
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+<h3 id="comp_num">Comparing Floating-Point Numbers</h3>
+<p>
+http://en.wikipedia.org/wiki/IEEE_754
+http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+<h3 id="rand_num">Generating Psuedo-Random Numbers</h3>
+<p>
+First
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+<h3 id="logs_num">Taking Logarithms</h3>
+<p>
+First
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+<h3 id="trig_num">Trigonometry in Degrees and Radians</h3>
+<p>
+First
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+<h3 id="matrix_num">Multiplying Matrices</h3>
+<p>
+First
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+<h3 id="complex_num">Complex Numbers</h3>
+<p>
+First
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+<h3 id="conv_num">Converting Between Binary, Octal, Hexidecimal, and Decimal</h3>
+<p>
+First
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+<h3 id="commas_num">Adding Commas to Numbers</h3>
+<p>
+First
+</p>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+}
+---------------------------------------------------------------------------
+</pre>
+
+<h3 id="checksum_num">Checksums</h3>
 <p>
 First
 </p>
