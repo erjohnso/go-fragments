@@ -87,12 +87,16 @@ Converted 3 items: 5, 3.209000, (4.000000-3.000000i)
 <p>
 Rounding or decreasing the precision of a floating-point number can be done with the
 formatting options in the <code><a href="http://golang.org/pkg/fmt/">fmt</a></code>
-package.  The fragment below shows how
+package.  The fragment below shows a few examples of working with floating-point
+numbers.
 </p>
 <p>
-Depending on your needs, the floating-point value can be cast to an integer or 
+Depending on your needs, the floating-point value can be cast to an integer which
+does not round the number but uses the number(s) preceding the decimal point.  Or
 the <code><a href="http://golang.org/pkg/math/">math</a></code> package contains
-floor/ceiling functions to also convert floating-point numbers to integers.
+floor/ceiling functions to obtain the lower/upper integer respectively (note:
+this does not change the type from float64 to an int though so casting may still
+be required).
 </p>
 
 <pre>
@@ -104,67 +108,127 @@ import (
 )
 
 func main() {
-    almostPi := 355.0 / 113.0
+    fpNumber := 1234.56789
 
-    fmt.Printf("1. %g (floating-point)\n", almostPi)
-    fmt.Printf("2. %.5g (floating-point)\n", almostPi)
-    fmt.Printf("3. %.5f (floating-point)\n", almostPi)
+    fmt.Printf("1. %f (floating-point)\n", fpNumber)
+    fmt.Printf("2. %.5g (floating-point)\n", fpNumber)
+    fmt.Printf("3. %.5f (floating-point)\n", fpNumber)
 
-    roundedStr := fmt.Sprintf("%.2f", almostPi)
+    roundedStr := fmt.Sprintf("%.2f", fpNumber)
     fmt.Printf("4. %s (string)\n", roundedStr)
 
-    fmt.Printf("5. %d (int)\n", int(almostPi))
-    fmt.Printf("6. %d (int)\n", int(math.Floor(almostPi)))
-    fmt.Printf("7. %d (int)\n", int(math.Ceil(almostPi)))
+    fmt.Printf("5. %d (int)\n", int(fpNumber))
+    fmt.Printf("6. %f (floating-point)\n", math.Floor(fpNumber))
+    fmt.Printf("7. %f (floating-point)\n", math.Ceil(fpNumber))
 }
 ---------------------------------------------------------------------------
-1. 3.1415929203539825 (floating-point)
-2. 3.1416 (floating-point)
-3. 3.14159 (floating-point)
-4. 3.14 (string)
-5. 3 (int)
-6. 3 (int)
-7. 4 (int)
+1. 1234.567899 (float64)
+2. 1234.56790 (float64)
+3. 1234.6 (float64)
+4. 1234.57 (string)
+5. 1234 (int)
+6. 1234.000000 (float64)
+7. 1235.000000 (float64)
 </pre>
 
 
 <h3 id="comp_num">Comparing Floating-Point Numbers</h3>
 <p>
-http://en.wikipedia.org/wiki/IEEE_754
-http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
+Comparing floating-point numbers can be challenging and there are several workarounds
+such as the epsilon approach highlighted in the below fragment.  Generally speaking, to
+find a reliable solution, you'll need to know a bit about the magnitude of the numbers
+being compared to select the appropriate workaround.  See the two links below for more
+information regarding the real representation of floating point numbers and possible
+solutions for comparing them.
+</p>
+
+<p>
+The standard defining how floating-point numbers are represented can be read in IEEE-754 (<a href="http://en.wikipedia.org/wiki/IEEE_754">http://en.wikipedia.org/wiki/IEEE_754</a>).
+This link contains a great discussion on the complexity of dealing with floating-point
+numbers and possible workarounds (<a href="http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/">http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm</a>).
 </p>
 
 <pre>
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "math"
+)
+
+const Float64Epsilon = 1e-64
+
+func EqualFloat64(a, b float64) bool {
+    return math.Abs(a - b) <= Float64Epsilon
+}
 
 func main() {
-    zero := 0.1 + 0.1 + 0.1 - 0.3
-    fmt.Printf("%f\n", zero)
-    fmt.Printf("%.1f\n", zero)
-    
-    fmt.Printf("%v, %.2f, %.30g\n", 1./8., 1./8., 1./8.)
-    fmt.Printf("%v, %.2f, %.30g\n", 29./40., 29./40., 29./40.)
-    fmt.Printf("%v, %.2f, %.30g\n", 29./40, 29./40, 29./40)
+    realZero := 0.0
+    z1 := 0.1 - 0.1
+    z2 := 0.1 + 0.1 + 0.1 - 0.3
+
+    if realZero == z1 { fmt.Println("1. zeros are equal") }
+    if realZero != z2 { fmt.Println("2. zeros are *not really* equal") }
+    if EqualFloat64(realZero, z2) { fmt.Println("3. zeros are *close enough to* equal") }
 }
 ---------------------------------------------------------------------------
+1. zeros are equal
+2. zeros are *not really* equal
+3. zeros are *close enough to* equal
 </pre>
 
 
 <h3 id="rand_num">Generating Pseudo-Random Numbers</h3>
 <p>
-First
+The <code><a href="http://golang.org/pkg/math/rand/">math/rand</a></code> package
+contains several functions for generating pseudo-random numbers.  If you've never
+worked with random numbers before, you'll need to be aware of the <code>Seed()</code>
+function.  Using <code>Seed()</code>, you can either ensure that the same set of
+random numbers is generated during each program evocation, or a non-deterministic 
+set of random numbers.  The fragment below demonstrates this concept where line #1
+computes the same set of numbers but line #2 has changed between successive runs.
+<i>Note that the Go Playground does *not* compute a new value for
+<code>time.Now().Unix()</code> so you'll need to save this fragment locally to
+duplicate the exercise.</i>
 </p>
 
 <pre>
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "math/rand"
+    "time"
+)
 
 func main() {
+    rand.Seed(1)
+    fmt.Println("1. Seed is the same between each program invocation")
+    for i := 0; i < 5; i++ {
+        fmt.Printf("%15d ", rand.Int())
+    }
+    fmt.Println("")
+
+    epochSeconds := time.Now().Unix()
+    rand.Seed(epochSeconds)
+    fmt.Printf("2. Current time (%d) used for seed value\n", epochSeconds)
+    for i := 0; i < 5; i++ {
+        fmt.Printf("%15d ", rand.Int())
+    }
+    fmt.Println("")
 }
 ---------------------------------------------------------------------------
+$ go run rand.go 
+1. Seed is the same between each program invocation
+      134020434      1597969999      1721070109      2068675587      1237770961 
+2. Current time (1357623975) used for seed value
+     1222109406        27889808       926361143       295892502       501286510 
+
+$ go run rand.go 
+1. Seed is the same between each program invocation
+      134020434      1597969999      1721070109      2068675587      1237770961 
+2. Current time (1357623979) used for seed value
+      182298948       583388168        59149587       276646812      1865825348 
 </pre>
 
 
