@@ -234,17 +234,41 @@ $ go run rand.go
 
 <h3 id="logs_num">Taking Logarithms</h3>
 <p>
-First
+The <code><a href="http://golang.org/pkg/math/">math</a></code> package contains
+a logarithm functions in base 2, 10, and <code>e</code>.  If you want to find the
+logarithm using a different base, you'll need to use logarithmic properties as
+shown in the fragment below.
 </p>
+
+<p>
+Logarithmic Property: Log base 'b' of A = (log base 'c' of A) / (log base 'c' of B)
+<br />
+The <code>math.Log</code> function is the natural log and it can be used with this
+property to solve for logarithms in with other bases.
+</p>
+
 
 <pre>
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "math"
+)
+
+func LogbA(base, value float64) float64 {
+    return float64(math.Log(value) / math.Log(base))
+}
 
 func main() {
+    fmt.Println("1. Log base 2 of 32 =", LogbA(2,32))
+    fmt.Println("2. Log base 13 of 2197 =", LogbA(13,2197))
+    fmt.Println("3. Log base 10 of 10 =", LogbA(10,10), "=", math.Log10(10))
 }
 ---------------------------------------------------------------------------
+1. Log base 2 of 32 = 5
+2. Log base 13 of 2197 = 3
+3. Log base 10 of 10 = 1 = 1
 </pre>
 
 
