@@ -257,7 +257,7 @@ import (
 )
 
 func LogbA(base, value float64) float64 {
-    return float64(math.Log(value) / math.Log(base))
+    return math.Log(value) / math.Log(base)
 }
 
 func main() {
@@ -274,17 +274,56 @@ func main() {
 
 <h3 id="trig_num">Trigonometry in Degrees and Radians</h3>
 <p>
-First
+The <code><a href="http://golang.org/pkg/math/">math</a></code> package contains
+common trigonometric functions.  Their arguments are expected to be in radians so if
+you'll be working in degrees, make sure to use a conversion function as illustrated
+in the below fragment.
+</p>
+
+<p>
+As an aside, note how the fragment below makes use of an earlier fragment to compare
+the values of floating-point numbers.  In this particular case, the precision (epsilon)
+value needed to be increased.
 </p>
 
 <pre>
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "math"
+)
+
+const Float64Epsilon = 1e-8
+
+func EqualFloat64(a, b float64) bool {
+    return math.Abs(a - b) <= Float64Epsilon
+}
+
+func DegreesToRadians(degrees float64) float64 {
+    return degrees * math.Pi / 180
+}
 
 func main() {
+    fmt.Println("Recall: 0(r)=0(d), Pi/4(r) = 45(d), Pi/2(r) = 90(d)")
+    fmt.Println()
+
+    fmt.Println("1. Sin(0) =", math.Sin(0))
+    fmt.Println("2. Sin(Pi/4) =", math.Sin(math.Pi / 4), "= Sin(45d) =",
+        math.Sin(DegreesToRadians(45)), " = 1 / Sqrt(2) = ",
+        1 / math.Sqrt(2))
+    fmt.Println("3. Sin(Pi/2) =", math.Sin(math.Pi / 2), "= Sin(90d) =",
+        math.Sin(DegreesToRadians(90)))
+    fmt.Println("4. Sin(30d) == Cos(60d):",
+        EqualFloat64(math.Sin(DegreesToRadians(30)), math.Cos(DegreesToRadians(60))))
 }
 ---------------------------------------------------------------------------
+Recall: 0(r)=0(d), Pi/4(r) = 45(d), Pi/2(r) = 90(d)
+
+1. Sin(0) = 0
+2. Sin(Pi/4) = 0.7071067811865475 = Sin(45d) = 0.7071067811865475  = 1 / Sqrt(2) =  0.7071067811865475
+3. Sin(Pi/2) = 1 = Sin(90d) = 1
+4. Sin(30d) == Cos(60d): true
 </pre>
 
 
