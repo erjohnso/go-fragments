@@ -398,17 +398,86 @@ func main() {
 <p>
 Go has support for complex numbers with the <code>complex64</code> and
 <code>complex128</code> built-intypes and the
-<code><a href="http://golang.org/pkg/math/cmplx/">cmplx</a></code> package.
+<code><a href="http://golang.org/pkg/math/cmplx/">cmplx</a></code> package.  The
+fragment below draws a famous fractal and demonstrates the use of the built-in
+complex type and some of the functions to operate on complext numbers.
 </p>
 
 <pre>
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "math/cmplx"
+    "strings"
+)
+
+func toInfinity(cNum complex128, iterations int) bool {
+    z := cNum
+    for j := 0; j < iterations; j++ {
+        z = cmplx.Pow(z, 2.0) + cNum
+        if cmplx.Abs(z) > 4 { return true }
+    }   
+    return false
+}   
+
+func mandelbrot(xmin, xmax, ymin, ymax, xstep, ystep float64, iterations int) {
+    var (
+        x, y float64
+        z complex128
+    )   
+    row := make([]string, int(xstep)+1)
+    for yc := 0.0; yc < ystep; yc++ {
+        y = yc*(ymax-ymin)/ystep + ymin
+        row = make([]string, int(xstep)+1)
+        for xc := 0.0; xc < xstep; xc++ {
+            x = xc*(xmax-xmin)/xstep + xmin
+            z = complex(x, y)
+            if toInfinity(z, iterations) {
+                row = append(row, " ")
+            } else {
+                row = append(row, "*")
+            }
+        }
+        fmt.Println(strings.Join(row, ""))
+    }
+}
 
 func main() {
+    mandelbrot(-2.0, 1.0, -1.0, 1.0, 64, 32, 1000)
 }
 ---------------------------------------------------------------------------
+                                                                
+                                        *                       
+                                       ***                      
+                                      *****                     
+                                       ***                      
+                                   * ******* *                  
+                               ** ************* **              
+                                ******************              
+                             * *******************              
+                              ********************              
+                             **********************             
+                  * * **    ***********************             
+                  *******   ***********************             
+                 **********************************             
+                 *********************************              
+     *  *    ************************************               
+                 *********************************              
+                 **********************************             
+                  *******   ***********************             
+                  * * **    ***********************             
+                             **********************             
+                              ********************              
+                             * *******************              
+                                ******************              
+                               ** ************* **              
+                                   * ******* *                  
+                                       ***                      
+                                      *****                     
+                                       ***                      
+                                        *                       
+                                                                
 </pre>
 
 
@@ -420,11 +489,36 @@ First
 <pre>
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "strconv"
+)
 
 func main() {
+    var (
+        d = 29    // no prefix for decimal (base 10)
+        h = 0x1d  // prefix '0x' for hexidecimal (base 16)
+        o = 035   // prefix '0' for octal (base 8)
+    )
+
+    // integer conversions with formatting
+    fmt.Printf("1. Octal and hexidecimal to decimal: %d, %d\n", h, o)
+    fmt.Printf("2. Octal and decimal to hexidecimal: %x, %x\n", o, d)
+    fmt.Printf("3. Decimal and hexidecimal to octal: %o, %o\n", d, h)
+    fmt.Printf("4. Octal, decimal, and hexidecimal to binary: %b, %b, %b\n", o, d, h)
+
+    // string conversions with strconv
+    b, _ := strconv.ParseInt("11101", 2, 64)
+    fmt.Printf("5. Binary to octal, decimal, hexidecimal: %d, %o, %x\n", b, b, b)
+    fmt.Printf("6. Int(123456890) to base 36: %s\n", strconv.FormatInt(1234567890,36))
 }
 ---------------------------------------------------------------------------
+1. Octal and hexidecimal to decimal: 29, 29
+2. Octal and decimal to hexidecimal: 1d, 1d
+3. Decimal and hexidecimal to octal: 35, 35
+4. Octal, decimal, and hexidecimal to binary: 11101, 11101, 11101
+5. Binary to octal, decimal, hexidecimal: 29, 35, 1d
+6. Int(123456890) to base 36: kf12oi
 </pre>
 
 
