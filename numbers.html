@@ -530,9 +530,71 @@ First
 <pre>
 package main
 
-import "fmt"
+import (
+    "fmt"
+)
+
+func ReadableFloat64(num float64, sep string) string {
+
+    var (
+        resultArr []string
+        newFloat, newDecPart float64
+        newIntPart int
+    )
+    
+    hasDecimal := false
+    isNegative := false
+    
+    if num < 0 {
+        isNegative = true
+        num = num * -1
+    }
+    
+    intPart := int(num)
+    decPart := num - float64(intPart)
+    decIntPart := int(decPart * 1000.0)
+    
+    if decIntPart > 0 {
+        hasDecimal = true
+    }
+
+    fmt.Printf("%f %d %f\n", num, intPart, decPart)
+    
+    newFloat = float64(intPart) / 1000.0
+
+    for {
+        newIntPart = int(newFloat)
+        newDecPart = newFloat - float64(newIntPart)
+        
+        fmt.Printf("%f %d %f\n", newFloat, newIntPart, newDecPart)
+        
+        decIntPart = int(newDecPart * 1000.0)
+        if hasDecimal {
+            resultArr = append(resultArr, fmt.Sprintf("%f", float64(decIntPart) + decPart))
+            hasDecimal = false
+        } else {
+            resultArr = append(resultArr, fmt.Sprintf("%d", decIntPart))
+        }
+
+        if newIntPart < 1000 {
+            resultArr = append(resultArr, fmt.Sprintf("%d", newIntPart))
+            break
+        }
+        newFloat = float64(newIntPart) / 1000.0
+    }
+    
+    if isNegative { resultArr = append(resultArr, "-") }
+
+    fmt.Println(resultArr)
+    return ""
+}
 
 func main() {
+    fmt.Println(ReadableFloat64(123456789, ","))
+    fmt.Println(ReadableFloat64(3456789.789, ",")) // rounding error 3,45*5*,789.789
+    fmt.Println(ReadableFloat64(-123456789.789, ","))
+    fmt.Println(ReadableFloat64(00987654321.12345, ",")) // rounding error 987,65*3*,32*0*.12345
+    fmt.Println(ReadableFloat64(9123456789.789, ",")) // too large?
 }
 ---------------------------------------------------------------------------
 </pre>
