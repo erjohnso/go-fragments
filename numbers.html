@@ -532,15 +532,29 @@ package main
 
 import (
     "fmt"
+    "strings"
+    "strconv"
 )
+
+func computeDecIntPart(fp float64) int64 {
+    s := fmt.Sprintf("%f", fp)
+    s = s[2:]                      // strip off "0."
+    s = strings.TrimRight(s, "0")  // strip off trailing zeros
+    i, _ := strconv.ParseInt(s, 10, 64)
+    return i
+}
 
 func ReadableFloat64(num float64, sep string) string {
 
     var (
         resultArr []string
         newFloat, newDecPart float64
-        newIntPart int
+        newIntPart, decIntPart int64
     )
+    
+    if num < 1000 {
+        return fmt.Sprintf("%f -> %s", num,strings.TrimRight(fmt.Sprintf("%f", num), ".0"))
+    }
     
     hasDecimal := false
     isNegative := false
@@ -550,25 +564,19 @@ func ReadableFloat64(num float64, sep string) string {
         num = num * -1
     }
     
-    intPart := int(num)
+    intPart := int64(num)
     decPart := num - float64(intPart)
-    decIntPart := int(decPart * 1000.0)
     
-    if decIntPart > 0 {
+    if decPart > 0 {
         hasDecimal = true
     }
-
-    fmt.Printf("%f %d %f\n", num, intPart, decPart)
     
     newFloat = float64(intPart) / 1000.0
-
     for {
-        newIntPart = int(newFloat)
+        newIntPart = int64(newFloat)
         newDecPart = newFloat - float64(newIntPart)
         
-        fmt.Printf("%f %d %f\n", newFloat, newIntPart, newDecPart)
-        
-        decIntPart = int(newDecPart * 1000.0)
+        decIntPart = computeDecIntPart(newDecPart)
         if hasDecimal {
             resultArr = append(resultArr, fmt.Sprintf("%f", float64(decIntPart) + decPart))
             hasDecimal = false
@@ -583,18 +591,29 @@ func ReadableFloat64(num float64, sep string) string {
         newFloat = float64(newIntPart) / 1000.0
     }
     
-    if isNegative { resultArr = append(resultArr, "-") }
+    if isNegative {
+        lastElem := resultArr[len(resultArr)-1]
+        resultArr[len(resultArr)-1] = fmt.Sprintf("-%s", lastElem)
+    }
 
-    fmt.Println(resultArr)
-    return ""
+    // reverse order
+    for i, j := 0, len(resultArr)-1; i < j; i, j = i+1, j-1 {
+            resultArr[i], resultArr[j] = resultArr[j], resultArr[i]
+    }
+    retStr := strings.TrimRight(strings.Join(resultArr, sep), "0")
+
+    return fmt.Sprintf("%f -> %s", num, retStr)
+
 }
 
 func main() {
+    fmt.Println(ReadableFloat64(45, ","))
     fmt.Println(ReadableFloat64(123456789, ","))
-    fmt.Println(ReadableFloat64(3456789.789, ",")) // rounding error 3,45*5*,789.789
-    fmt.Println(ReadableFloat64(-123456789.789, ","))
-    fmt.Println(ReadableFloat64(00987654321.12345, ",")) // rounding error 987,65*3*,32*0*.12345
-    fmt.Println(ReadableFloat64(9123456789.789, ",")) // too large?
+    fmt.Println(ReadableFloat64(3456789.789, ","))
+    fmt.Println(ReadableFloat64(-0123456789.789, ","))
+    fmt.Println(ReadableFloat64(-10123456789.789, ","))
+    fmt.Println(ReadableFloat64(00987654321.12345, ","))
+    fmt.Println(ReadableFloat64(9123456789.0789, ",")) // rounding error .078899
 }
 ---------------------------------------------------------------------------
 </pre>
