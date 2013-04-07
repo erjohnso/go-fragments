@@ -528,7 +528,10 @@ func main() {
 
 <h3 id="commas_num">Adding Commas to Numbers</h3>
 <p>
-First
+This fragment converts a float64 to a string and inserts commas to make the number
+more human-friendly (not localized).  It's subject to rounding errors (see output
+for test #7), so there is some loss in fidelity and the function could be improved
+by adding localization.
 </p>
 
 <pre>
