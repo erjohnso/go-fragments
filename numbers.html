@@ -187,6 +187,8 @@ function.  Using <code>Seed()</code>, you can either ensure that the same set of
 random numbers is generated during each program evocation, or a non-deterministic 
 set of random numbers.  The fragment below demonstrates this concept where line #1
 computes the same set of numbers but line #2 has changed between successive runs.
+<br />
+<br />
 <i>Note that the Go Playground does *not* compute a new value for
 <code>time.Now().Unix()</code> so you'll need to save this fragment locally to
 duplicate the exercise.</i>
@@ -428,10 +430,10 @@ func mandelbrot(xmin, xmax, ymin, ymax, xstep, ystep float64, iterations int) {
     )   
     row := make([]string, int(xstep)+1)
     for yc := 0.0; yc < ystep; yc++ {
-        y = yc*(ymax-ymin)/ystep + ymin
-        row = make([]string, int(xstep)+1)
+        y = yc * (ymax-ymin) / ystep + ymin
+        row = make([]string, int(xstep) + 1)
         for xc := 0.0; xc < xstep; xc++ {
-            x = xc*(xmax-xmin)/xstep + xmin
+            x = xc * (xmax-xmin) / xstep + xmin
             z = complex(x, y)
             if toInfinity(z, iterations) {
                 row = append(row, " ")
@@ -483,7 +485,9 @@ func main() {
 
 <h3 id="conv_num">Converting Between Binary, Octal, Hexidecimal, and Decimal</h3>
 <p>
-First
+This fragment shows numerical represenations in common bases used in computer science
+and how to display them in alternate bases. The strconv package can be used to
+convert in other bases such as binary.
 </p>
 
 <pre>
@@ -510,7 +514,7 @@ func main() {
     // string conversions with strconv
     b, _ := strconv.ParseInt("11101", 2, 64)
     fmt.Printf("5. Binary to octal, decimal, hexidecimal: %d, %o, %x\n", b, b, b)
-    fmt.Printf("6. Int(123456890) to base 36: %s\n", strconv.FormatInt(1234567890,36))
+    fmt.Printf("6. Decimal 98765432 to base 36: %s\n", strconv.FormatInt(98765432,36))
 }
 ---------------------------------------------------------------------------
 1. Octal and hexidecimal to decimal: 29, 29
@@ -518,7 +522,7 @@ func main() {
 3. Decimal and hexidecimal to octal: 35, 35
 4. Octal, decimal, and hexidecimal to binary: 11101, 11101, 11101
 5. Binary to octal, decimal, hexidecimal: 29, 35, 1d
-6. Int(123456890) to base 36: kf12oi
+6. Decimal 98765432 to base 36: 1msvw8
 </pre>
 
 
@@ -533,89 +537,70 @@ package main
 import (
     "fmt"
     "strings"
-    "strconv"
 )
 
-func computeDecIntPart(fp float64) int64 {
-    s := fmt.Sprintf("%f", fp)
-    s = s[2:]                      // strip off "0."
-    s = strings.TrimRight(s, "0")  // strip off trailing zeros
-    i, _ := strconv.ParseInt(s, 10, 64)
-    return i
-}
-
-func ReadableFloat64(num float64, sep string) string {
-
+func CommaifyFloat64(fp float64) string {
     var (
-        resultArr []string
-        newFloat, newDecPart float64
-        newIntPart, decIntPart int64
+        isNegative bool
+        strfp string
+        parts []string
+        result []string
+        l int
     )
-    
-    if num < 1000 {
-        return fmt.Sprintf("%f -> %s", num,strings.TrimRight(fmt.Sprintf("%f", num), ".0"))
-    }
-    
-    hasDecimal := false
-    isNegative := false
-    
-    if num < 0 {
+    if fp < 0 {
         isNegative = true
-        num = num * -1
+        fp = fp * -1
     }
-    
-    intPart := int64(num)
-    decPart := num - float64(intPart)
-    
-    if decPart > 0 {
-        hasDecimal = true
+    // convert to string and trim off leading/trailing zeros
+    strfp = strings.Trim(fmt.Sprintf("%f", fp), "0")
+    // split on decimal point
+    parts = strings.Split(strfp, ".")
+    if len(parts) == 2 && len(parts[1]) > 0 {
+        result = append(result, parts[1], ".")
     }
-    
-    newFloat = float64(intPart) / 1000.0
-    for {
-        newIntPart = int64(newFloat)
-        newDecPart = newFloat - float64(newIntPart)
-        
-        decIntPart = computeDecIntPart(newDecPart)
-        if hasDecimal {
-            resultArr = append(resultArr, fmt.Sprintf("%f", float64(decIntPart) + decPart))
-            hasDecimal = false
-        } else {
-            resultArr = append(resultArr, fmt.Sprintf("%d", decIntPart))
+    // is number >= 100?
+    if len(parts[0]) >= 3 {
+        tmp := parts[0]
+        for len(tmp) >= 3 {
+            l = len(tmp)
+            result = append(result, tmp[(l-3):l])
+            tmp = tmp[0:(l-3)]
         }
-
-        if newIntPart < 1000 {
-            resultArr = append(resultArr, fmt.Sprintf("%d", newIntPart))
-            break
+        if len(tmp) > 0 {
+            result = append(result, tmp)
         }
-        newFloat = float64(newIntPart) / 1000.0
+    } else {
+        result = append(result, parts[0])
     }
-    
+    // reverse list
+    for i, j := 0, len(result) - 1; i < j; i, j = i+1, j-1 {
+        result[i], result[j] = result[j], result[i]
+    }
     if isNegative {
-        lastElem := resultArr[len(resultArr)-1]
-        resultArr[len(resultArr)-1] = fmt.Sprintf("-%s", lastElem)
+        return strings.Replace(
+            fmt.Sprintf("-%s", strings.Join(result, ",")), ",.,", ".", 1)
     }
-
-    // reverse order
-    for i, j := 0, len(resultArr)-1; i < j; i, j = i+1, j-1 {
-            resultArr[i], resultArr[j] = resultArr[j], resultArr[i]
-    }
-    retStr := strings.TrimRight(strings.Join(resultArr, sep), "0")
-
-    return fmt.Sprintf("%f -> %s", num, retStr)
-
+    return strings.Replace(
+        fmt.Sprintf("%s", strings.Join(result, ",")), ",.,", ".", 1)
 }
 
 func main() {
-    fmt.Println(ReadableFloat64(45, ","))
-    fmt.Println(ReadableFloat64(123456789, ","))
-    fmt.Println(ReadableFloat64(3456789.789, ","))
-    fmt.Println(ReadableFloat64(-0123456789.789, ","))
-    fmt.Println(ReadableFloat64(-10123456789.789, ","))
-    fmt.Println(ReadableFloat64(00987654321.12345, ","))
-    fmt.Println(ReadableFloat64(9123456789.0789, ",")) // rounding error .078899
+    fmt.Printf("1. %s\n", CommaifyFloat64(45))
+    fmt.Printf("2. %s\n", CommaifyFloat64(123456789))
+    fmt.Printf("3. %s\n", CommaifyFloat64(34567890.0123))
+    fmt.Printf("4. %s\n", CommaifyFloat64(-0123456789.789))
+    fmt.Printf("5. %s\n", CommaifyFloat64(-10123456789.789))
+    fmt.Printf("6. %s\n", CommaifyFloat64(00987654321.1234500))
+    fmt.Printf("7. %s (rounding error)\n", CommaifyFloat64(9123456789.0789))
 }
 ---------------------------------------------------------------------------
+1. 45
+2. 123,456,789
+3. 34,567,890.0123
+4. -123,456,789.789
+5. -10,123,456,789.789
+6. 987,654,321.12345
+7. 9,123,456,789.078899 (rounding error)
 </pre>
 
 
